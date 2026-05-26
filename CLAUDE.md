@@ -16,6 +16,7 @@ Use the Task tool with these specialized subagents for appropriate tasks:
 
 ### Skills
 - **backend-api-test** skill: Use when writing or modifying tests in `tests/backend` directory with pytest and FastAPI TestClient
+- **saas-ui-redesign** skill: Use when redesigning/modernizing the Vue 3 UI — converting a top nav to a left sidebar, adding a CSS design-token layer, or improving spacing/visual consistency across views
 
 ### MCP Tools
 - **ALWAYS use GitHub MCP tools** (`mcp__github__*`) for ALL GitHub operations
@@ -31,14 +32,23 @@ Use the Task tool with these specialized subagents for appropriate tasks:
 ## Quick Start
 
 ```bash
-# Backend
+# Backend (FastAPI on port 8001)
 cd server
 uv run python main.py
 
-# Frontend
+# Frontend (Vite on port 3000)
 cd client
-npm install && npm run dev
+npm install        # add --ignore-scripts if any native postinstall trips Santa
+npm run dev
 ```
+
+> **esbuild / Santa workaround:** The native `esbuild` binary is blocked by Santa (the
+> internal binary-allowlist manager) and is killed with SIGKILL on launch, which would
+> normally break Vite (`npm run dev` / `build` / `preview`). This project works around it
+> with an npm `overrides` entry in `client/package.json` that swaps `esbuild` for the
+> pure-WebAssembly `esbuild-wasm` build, so no native binary ever runs. Packages are
+> pulled from public npm via `client/.npmrc` because the internal Artifactory mirror
+> lacks them. Do not remove the override or the frontend will break again.
 
 ## Key Patterns
 
@@ -66,6 +76,9 @@ npm install && npm run dev
 - Backend: `server/main.py`, `server/mock_data.py`
 - Data: `server/data/*.json`
 - Styles: `client/src/App.vue`
+
+## Coding Conventions
+- Always document non-obvious logic changes with comments
 
 ## Design System
 - Colors: Slate/gray (#0f172a, #64748b, #e2e8f0)

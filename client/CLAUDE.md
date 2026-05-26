@@ -6,9 +6,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with th
 
 ```bash
 # From client directory
+npm install   # add --ignore-scripts if a native postinstall is killed by Santa
 npm run dev
 # Runs on http://localhost:3000
 ```
+
+> **esbuild / Santa workaround:** The native `esbuild` binary is blocked by Santa and is
+> killed with SIGKILL on launch, which would normally break Vite. `client/package.json`
+> contains an `overrides` entry that swaps `esbuild` for the pure-WebAssembly
+> `esbuild-wasm` build, so Vite runs entirely in-process with no native binary. Packages
+> come from public npm via `client/.npmrc` (the internal Artifactory mirror lacks them).
+> Keep both the override and the `.npmrc`, or the frontend stops building.
 
 ## Development Best Practices
 
@@ -475,7 +483,7 @@ src/
 
 ## Quick Reference
 
-**Start dev server:** `npm run dev`
+**Start dev server:** `npm run dev` (works via the `esbuild-wasm` override — see "Running the Client")
 **Build for production:** `npm run build`
 **Component structure:** Template → Script (Composition API) → Scoped Styles
 **Data loading:** loading state → try/catch → finally
